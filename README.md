@@ -41,6 +41,49 @@ confounding lying to your face with a straight expression. Orthogonal DML
 reports 1.864, missing by 0.122 instead of 1.812. That gap is the entire
 reason the "just compare the means" move keeps burning product teams.
 
+**Update:** look at that table again. `adjusted_ols` misses by 0.114,
+closer than orthogonal DML's 0.122, at the exact seed printed above.
+Across 60 seeds it's not close: plain adjusted OLS wins the head-to-head
+against DML more often than DML wins. Both estimators demolish the naive
+comparison; the specific "orthogonal DML beats simple adjustment" story
+doesn't hold up. `python -m orthoshift.eval_v2` runs the multi-seed
+comparison. Details below.
+
+## Does the "orthogonal" part actually buy anything over plain adjustment?
+
+`adjusted_ols` and `dml_ate` both use the exact same `features()` function
+(`[1, x1, x2, x1^2, x2^2, x1*x2]`) for their adjustment/nuisance model,
+and that functional form is an exact match for `make_dataset`'s true
+outcome model. DML's whole selling point, robustness to nuisance-model
+*misspecification* via Neyman orthogonality, is never exercised when the
+nuisance model is exactly correctly specified for both estimators.
+
+```bash
+python -m orthoshift.eval_v2
+```
+```
+corpus       n   naive err   ols err   dml err  ols wins  dml wins
+tuning      60      2.0246    0.0476    0.0505        42        18
+holdout     30      1.9913    0.0512    0.0534        16        14
+```
+
+Both estimators crush naive by roughly 40x, real, dramatic confounding
+removal. But DML does not reliably beat adjusted OLS: OLS wins the
+head-to-head more often, in both the 60-seed tuning sweep and a disjoint
+30-seed holdout evaluated exactly once. It's even true at the exact seed
+the published table uses, look closely: `adjusted_ols` misses by 0.114,
+closer than orthogonal DML's 0.122.
+
+None of this means DML is broken, `dml_ate` is a correct implementation
+of the cross-fitted orthogonal estimator. It means this particular
+benchmark, with a low-dimensional confounder and a correctly-specified
+linear-plus-interaction adjustment model, is exactly the regime where
+DML's extra machinery has nothing to protect you from. `data.py` and
+`estimators.py` are untouched, and the published table above still
+reproduces exactly; `eval_v2.py` is the honest multi-seed companion that
+shows what the headline actually demonstrates (confounding removal, not
+DML-over-OLS) versus what the framing implies.
+
 ## Research trail
 
 - Estimating causal effects with double machine learning, 2024: https://arxiv.org/abs/2403.14385

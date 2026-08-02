@@ -28,3 +28,5 @@ jobs:
         run: python examples/quickstart.py
       - name: Run benchmark
         run: python -m orthoshift.benchmark
+      - name: Run multi-seed DML-vs-OLS comparison
+        run: python -m orthoshift.eval_v2
