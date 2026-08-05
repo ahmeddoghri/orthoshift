@@ -2,7 +2,6 @@
 
 "Treated users did better, so the treatment worked" is how every bad growth experiment gets greenlit. orthoshift builds a population where that logic is provably wrong, then measures exactly how wrong.
 
-![CI](https://github.com/ahmeddoghri/orthoshift/actions/workflows/ci.yml/badge.svg)
 ![python](https://img.shields.io/badge/python-3.9%2B-blue)
 ![deps](https://img.shields.io/badge/runtime%20deps-none-success)
 ![license](https://img.shields.io/badge/license-MIT-black)
